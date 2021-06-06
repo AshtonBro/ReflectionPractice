@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace ReflectionTest
 {
@@ -24,24 +25,24 @@ namespace ReflectionTest
 
         public static void CopyDivideValues(a _a, b _b)
         {
-            var bPropertyes = _b.GetType().GetProperties();
-
             var aType = _a.GetType();
+            var bPropertyes = _b.GetType().GetProperties();
 
             foreach (var bProp in bPropertyes)
             {
-                var a_propExist = aType.GetProperty(aType.Name + bProp.Name.Substring(1));
+                var aPropExist = aType.GetProperty(aType.Name + bProp.Name.Substring(1));
 
-                if (a_propExist != null)
+                if (aPropExist != null)
                 {
-                    bProp.SetValue(_b, a_propExist.GetValue(_a));
+                    bProp.SetValue(_b, aPropExist.GetValue(_a));
 
-                    Console.WriteLine($"Proportion value from {a_propExist.Name} successfully copied to {bProp.Name}.");
+                    Console.WriteLine($"Proportion value from {aPropExist.Name} successfully copied to {bProp.Name}.");
                 }
                 else
                 {
                     Console.WriteLine($"{bProp.Name} is incorrect property!");
                 }
+
             }
 
             Console.WriteLine("");
@@ -88,7 +89,7 @@ namespace ReflectionTest
 
                 if (aPropExist != null)
                 {
-                    var isHasAttribute = cProp.GetCustomAttributes(typeof(Attribute), false).Length > 0;
+                    var isHasAttribute = cProp.GetCustomAttributes(typeof(CopyFromB), false).Length > 0;
 
                     if (isHasAttribute)
                     {

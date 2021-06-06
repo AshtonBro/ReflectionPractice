@@ -1,11 +1,12 @@
 using System;
 
 public class CopyFromB : Attribute { }
+public class CopyFromA : Attribute { }
 
 public class c
 {
     [CopyFromB] public int? c2 { get; set; }
-    public int? c3 { get; set; }
+    [CopyFromA] public int? c3 { get; set; }
     public int? c4 { get; set; }
     public int? c5 { get; set; }
     public int? c6 { get; set; }
