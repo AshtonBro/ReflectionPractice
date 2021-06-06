@@ -125,37 +125,24 @@ namespace ReflectionTest
             Console.ReadLine();
         }
 
-        public static void CopyValues(c _a, d _b)
+        public static void CopyValues(c _c, d _d)
         {
-            var propertyes_a = _a.GetType().GetProperties();
-            var propertyes_b = _b.GetType().GetProperties();
+            var dPropertyes = _d.GetType().GetProperties();
+            var cType = _c.GetType();
 
-            var index = -1;
-
-            var firstChar = propertyes_b[0].Name[0];
-
-            foreach (var property_a in propertyes_a)
+            foreach (var dProp in dPropertyes)
             {
-                index++;
+                var a_propExist = cType.GetProperty(cType.Name + dProp.Name.Substring(1));
 
-                if (index <= propertyes_a.Length - 1 & index <= propertyes_b.Length - 1)
+                if (a_propExist != null)
                 {
-                    if (!propertyes_b[index].Name.Contains($"{firstChar}"))
-                    {
-                        index++;
-                    }
+                    dProp.SetValue(_d, a_propExist.GetValue(_c));
 
-                    propertyes_b[index].SetValue(_b, property_a.GetValue(_a));
-
-                    if (property_a.GetValue(_a).Equals(propertyes_b[index].GetValue(_b)))
-                    {
-                        Console.WriteLine($"Values between {property_a.Name} and {propertyes_b[index].Name} Equals is TRUE.");
-
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Values between {property_a.Name} and {propertyes_b[index].Name} Equals is FALSE.");
-                    }
+                    Console.WriteLine($"Proportion value from {a_propExist.Name} successfully copied to {dProp.Name}.");
+                }
+                else
+                {
+                    Console.WriteLine($"{dProp.Name} is incorrect property!");
                 }
             }
 
