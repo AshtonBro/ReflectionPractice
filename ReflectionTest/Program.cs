@@ -40,6 +40,7 @@ namespace ReflectionTest
             // Task #3
 
             ReflectionPresenter.CopyValues(c, d);
+            // Task #4
         }
     }
 }
