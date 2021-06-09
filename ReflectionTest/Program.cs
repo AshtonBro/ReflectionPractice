@@ -44,6 +44,8 @@ namespace ReflectionTest
 
             ReflectionPresenter.CopyValuesArrayProp(c, e);
             // Task #5
+
+            //ReflectionPresenter.CopyValuesArrayPropSecond(e, c);
         }
     }
 }
