@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 
 namespace ReflectionTest
 {
@@ -7,10 +11,13 @@ namespace ReflectionTest
     {
         private const string PRESS_ENTER = "Press ENTER to continue";
 
+        private static IFormatProvider formatProvider;
+        private static int index;
+
         public static void GetValues(a _a)
         {
             var aPropertyes = _a.GetType().GetProperties();
-            
+
             foreach (var aProp in aPropertyes)
             {
                 var value = aProp.GetValue(_a);
@@ -89,13 +96,13 @@ namespace ReflectionTest
 
                 if (aPropExist != null)
                 {
-                    var isHasAttribute = cProp.GetCustomAttributes(typeof(CopyFromB), false).Length > 0;
+                    var hasAttribute = cProp.GetCustomAttribute<CopyFromB>();
 
-                    if (isHasAttribute)
+                    if (hasAttribute != null)
                     {
                         var bPropExist = bType.GetProperty(bType.Name + cProp.Name.Substring(1));
 
-                        if(bPropExist != null)
+                        if (bPropExist != null)
                         {
                             cProp.SetValue(_c, bPropExist.GetValue(_b));
 
@@ -120,7 +127,7 @@ namespace ReflectionTest
                     Console.WriteLine($"{cProp.Name} is incorrect property!");
                 }
             }
-           
+
             Console.WriteLine("-------------End Task №3-------------");
             Console.WriteLine(PRESS_ENTER);
             Console.ReadLine();
@@ -133,13 +140,13 @@ namespace ReflectionTest
 
             foreach (var dProp in dPropertyes)
             {
-                var a_propExist = cType.GetProperty(cType.Name + dProp.Name.Substring(1));
+                var cPropExist = cType.GetProperty(cType.Name + dProp.Name.Substring(1));
 
-                if (a_propExist != null)
+                if (cPropExist != null)
                 {
-                    dProp.SetValue(_d, a_propExist.GetValue(_c));
+                    dProp.SetValue(_d, cPropExist.GetValue(_c));
 
-                    Console.WriteLine($"Proportion value from {a_propExist.Name} successfully copied to {dProp.Name}.");
+                    Console.WriteLine($"Proportion value from {cPropExist.Name} successfully copied to {dProp.Name}.");
                 }
                 else
                 {
@@ -150,6 +157,100 @@ namespace ReflectionTest
             Console.WriteLine("-------------End Task №4-------------");
             Console.WriteLine(PRESS_ENTER);
             Console.ReadLine();
+        }
+
+        //Copy all values from c to e. Arrays!!! Split value do it fits.
+        public static void CopyValuesArrayProp(c _c, e _e)
+        {
+            var cType = _c.GetType();
+            var eType = _e.GetType();
+            var ePropertyes = _e.GetType().GetProperties();
+            var cPropertyes = _c.GetType().GetProperties();
+
+            foreach (var eProp in ePropertyes)
+            {
+                var cPropExist = cType.GetProperty(cType.Name + eProp.Name.Substring(1));
+
+                if (cPropExist != null)
+                {
+                    if (typeof(IEnumerable).IsAssignableFrom(eProp.PropertyType))
+                    {
+                        Console.WriteLine(cPropExist.Name + " " + eProp.PropertyType.Name);
+
+                        
+                       //var listType = typeof(List<>).MakeGenericType(eProp.PropertyType);
+
+                       //var instanceType = (IList)Activator.CreateInstance(listType);
+
+                       var value = (int)cPropExist.GetValue(_c);
+
+                        //var result = ((IConvertible)4).ToByte(formatProvider);
+
+                        var instanceType = Array.CreateInstance(eProp.PropertyType, value.ToString().Length);
+
+                        while (value > 0)
+                        {
+                            var num = value % 10;
+
+                            var result = ((IConvertible)num).ToByte(formatProvider);
+
+                            instanceType.SetValue(result, index++);
+
+                            value = value / 10;
+                        }
+
+                        //instanceType.SetValue(result, 0);
+
+
+                        eProp.SetValue(_e, instanceType);
+
+                        // List<object> listS = instanceType.Cast<object>().ToList();
+
+                        // listS.Add(value);
+
+                        //var al = new ArrayList(listS);
+
+                        // var instanceType = Array.CreateInstance(eProp.PropertyType.GetElementType(), 1);
+
+                        // instanceType.SetValue(value, 0);
+
+                        //var convertValue = Convert.ChangeType(listS[0], eProp.PropertyType);
+
+                        //instanceType.Add(value);
+
+                        //foreach (var item in currentEnum)
+                        //{
+                        //    if (item != default)
+                        //    {
+                        //        instance.Add((item);
+                        //    }
+                        //}
+
+                        // eProp.SetValue(_e, instanceType);
+
+                        Type tProp = eProp.PropertyType;
+
+
+                        //eProp.SetValue(_e, Convert.ChangeType(value, tProp), null);
+
+                    }
+                    else
+                    {
+                        eProp.SetValue(_e, cPropExist.GetValue(_c));
+
+                        Console.WriteLine($"Proportion value from {cPropExist.Name} successfully copied to {eProp.Name}.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"{eProp.Name} is incorrect property!");
+                }
+            }
+
+            Console.WriteLine("-------------End Task №5-------------");
+            Console.WriteLine(PRESS_ENTER);
+            Console.ReadLine();
+
         }
     }
 }
