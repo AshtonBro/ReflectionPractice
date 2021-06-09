@@ -11,9 +11,6 @@ namespace ReflectionTest
     {
         private const string PRESS_ENTER = "Press ENTER to continue";
 
-        private static IFormatProvider formatProvider;
-        private static int index;
-
         public static void GetValues(a _a)
         {
             var aPropertyes = _a.GetType().GetProperties();
@@ -159,13 +156,10 @@ namespace ReflectionTest
             Console.ReadLine();
         }
 
-        //Copy all values from c to e. Arrays!!! Split value do it fits.
         public static void CopyValuesArrayProp(c _c, e _e)
         {
             var cType = _c.GetType();
-            var eType = _e.GetType();
             var ePropertyes = _e.GetType().GetProperties();
-            var cPropertyes = _c.GetType().GetProperties();
 
             foreach (var eProp in ePropertyes)
             {
@@ -175,63 +169,29 @@ namespace ReflectionTest
                 {
                     if (typeof(IEnumerable).IsAssignableFrom(eProp.PropertyType))
                     {
-                        Console.WriteLine(cPropExist.Name + " " + eProp.PropertyType.Name);
+                        var value = (int)cPropExist.GetValue(_c);
 
-                        
-                       //var listType = typeof(List<>).MakeGenericType(eProp.PropertyType);
+                        var elementType = eProp.PropertyType.GetElementType();
 
-                       //var instanceType = (IList)Activator.CreateInstance(listType);
+                        var valueLength = value.ToString().Length;
 
-                       var value = (int)cPropExist.GetValue(_c);
+                        var instanceType = Array.CreateInstance(elementType, valueLength);
 
-                        //var result = ((IConvertible)4).ToByte(formatProvider);
-
-                        var instanceType = Array.CreateInstance(eProp.PropertyType, value.ToString().Length);
-
-                        while (value > 0)
+                        foreach (var elem in instanceType)
                         {
                             var num = value % 10;
 
-                            var result = ((IConvertible)num).ToByte(formatProvider);
+                            //var index = Array.IndexOf(instanceType, elem);
 
-                            instanceType.SetValue(result, index++);
+                            instanceType.SetValue(((IConvertible)num).ToType(elementType, null), --valueLength);
 
-                            value = value / 10;
+                            value /= 10;
                         }
-
-                        //instanceType.SetValue(result, 0);
-
 
                         eProp.SetValue(_e, instanceType);
 
-                        // List<object> listS = instanceType.Cast<object>().ToList();
-
-                        // listS.Add(value);
-
-                        //var al = new ArrayList(listS);
-
-                        // var instanceType = Array.CreateInstance(eProp.PropertyType.GetElementType(), 1);
-
-                        // instanceType.SetValue(value, 0);
-
-                        //var convertValue = Convert.ChangeType(listS[0], eProp.PropertyType);
-
-                        //instanceType.Add(value);
-
-                        //foreach (var item in currentEnum)
-                        //{
-                        //    if (item != default)
-                        //    {
-                        //        instance.Add((item);
-                        //    }
-                        //}
-
-                        // eProp.SetValue(_e, instanceType);
-
-                        Type tProp = eProp.PropertyType;
-
-
-                        //eProp.SetValue(_e, Convert.ChangeType(value, tProp), null);
+                        Console.WriteLine($"Proportion value from {cPropExist.Name} successfully copied to " +
+                            $"{eProp.PropertyType.Name}{eProp.Name}");
 
                     }
                     else
@@ -250,7 +210,48 @@ namespace ReflectionTest
             Console.WriteLine("-------------End Task №5-------------");
             Console.WriteLine(PRESS_ENTER);
             Console.ReadLine();
+        }
 
+        public static void CopyValuesArrayPropSecond(e _e, c _a)
+        {
+            var eType = _e.GetType();
+            var aType = _a.GetType();
+
+            //copy from a to E
+            foreach (var eProp in eType.GetProperties())
+            {
+                var aPropExist = aType.GetProperty(aType.Name + eProp.Name.Substring(1));
+
+                if (aPropExist != null)
+                {
+                    if (eProp.PropertyType.IsArray)
+                    {
+                        var arrayType = eProp.PropertyType.GetElementType();
+
+                        var charArray = aPropExist.GetValue(_a).ToString().ToCharArray();
+
+                        var arrayNotChanged = charArray.Select(f => Convert.ChangeType(f, arrayType)).ToArray();
+
+                        var method = typeof(ReflectionPresenter).GetMethod(nameof(ConvertTo));
+
+                        var getmethod = method.MakeGenericMethod(arrayType);
+
+                        var changedTypeArray = getmethod.Invoke(null, new object[] { arrayNotChanged });
+
+                        eProp.SetValue(_e, changedTypeArray);
+                    }
+                    else
+                    {
+                        eProp.SetValue(_e, aPropExist.GetValue(_a));
+                    }
+                }
+            }
+        }
+
+        public static T[] ConvertTo<T>(object[] arr)
+        {
+            return arr.Cast<T>().ToArray();
         }
     }
+
 }
