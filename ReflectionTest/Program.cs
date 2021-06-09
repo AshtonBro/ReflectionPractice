@@ -21,7 +21,7 @@ namespace ReflectionTest
             //Copy all values from c to d.
 
             var e = new e();
-            //Copy all values from c to d. Arrays!!! Split value do it fits.
+            //Copy all values from c to e. Arrays!!! Split value do it fits.
 
             var f = new f();
             //Copy all values from d to f. (convert values back). Some property values must be set from different property in same object, based on source attribute.
@@ -41,6 +41,9 @@ namespace ReflectionTest
 
             ReflectionPresenter.CopyValues(c, d);
             // Task #4
+
+            ReflectionPresenter.CopyValuesArrayProp(c, e);
+            // Task #5
         }
     }
 }
