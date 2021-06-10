@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -34,7 +31,7 @@ namespace ReflectionTest
 
             foreach (var bProp in bPropertyes)
             {
-                var aPropExist = aType.GetProperty(aType.Name + bProp.Name.Substring(1));
+                var aPropExist = aType.GetProperty(aType.Name + bProp.Name[1..]);
 
                 if (aPropExist != null)
                 {
@@ -46,7 +43,6 @@ namespace ReflectionTest
                 {
                     Console.WriteLine($"{bProp.Name} is incorrect property!");
                 }
-
             }
 
             Console.WriteLine("");
@@ -60,7 +56,7 @@ namespace ReflectionTest
 
                 if (value != null)
                 {
-                    var division = bProp.Name.Substring(1);
+                    var division = bProp.Name[1..];
 
                     var result = Convert.ToInt32(value) / Int32.Parse(division);
 
@@ -89,7 +85,7 @@ namespace ReflectionTest
 
             foreach (var cProp in cPropertyes)
             {
-                var aPropExist = aType.GetProperty(aType.Name + cProp.Name.Substring(1));
+                var aPropExist = aType.GetProperty(aType.Name + cProp.Name[1..]);
 
                 if (aPropExist != null)
                 {
@@ -97,7 +93,7 @@ namespace ReflectionTest
 
                     if (hasAttribute != null)
                     {
-                        var bPropExist = bType.GetProperty(bType.Name + cProp.Name.Substring(1));
+                        var bPropExist = bType.GetProperty(bType.Name + cProp.Name[1..]);
 
                         if (bPropExist != null)
                         {
@@ -137,7 +133,7 @@ namespace ReflectionTest
 
             foreach (var dProp in dPropertyes)
             {
-                var cPropExist = cType.GetProperty(cType.Name + dProp.Name.Substring(1));
+                var cPropExist = cType.GetProperty(cType.Name + dProp.Name[1..]);
 
                 if (cPropExist != null)
                 {
@@ -163,36 +159,40 @@ namespace ReflectionTest
 
             foreach (var eProp in ePropertyes)
             {
-                var cPropExist = cType.GetProperty(cType.Name + eProp.Name.Substring(1));
+                var cPropExist = cType.GetProperty(cType.Name + eProp.Name[1..]);
 
                 if (cPropExist != null)
                 {
-                    if (typeof(IEnumerable).IsAssignableFrom(eProp.PropertyType))
+                    if (eProp.PropertyType.IsArray)
                     {
-                        var value = (int)cPropExist.GetValue(_c);
+                        int? value = (int)cPropExist.GetValue(_c);
 
-                        var elementType = eProp.PropertyType.GetElementType();
-
-                        var valueLength = value.ToString().Length;
-
-                        var instanceType = Array.CreateInstance(elementType, valueLength);
-
-                        foreach (var elem in instanceType)
+                        if (value != null)
                         {
-                            var num = value % 10;
+                            var elementType = eProp.PropertyType.GetElementType();
 
-                            //var index = Array.IndexOf(instanceType, elem);
+                            var valueLength = value.ToString().Length;
 
-                            instanceType.SetValue(((IConvertible)num).ToType(elementType, null), --valueLength);
+                            var instanceType = Array.CreateInstance(elementType, valueLength);
 
-                            value /= 10;
+                            foreach (var elem in instanceType)
+                            {
+                                var num = value % 10;
+
+                                instanceType.SetValue(((IConvertible)num).ToType(elementType, null), --valueLength);
+
+                                value /= 10;
+                            }
+
+                            eProp.SetValue(_e, instanceType);
+
+                            Console.WriteLine($"Proportion value from {cPropExist.Name} successfully copied to " +
+                                $"{eProp.PropertyType.Name} {eProp.Name}");
                         }
-
-                        eProp.SetValue(_e, instanceType);
-
-                        Console.WriteLine($"Proportion value from {cPropExist.Name} successfully copied to " +
-                            $"{eProp.PropertyType.Name}{eProp.Name}");
-
+                        else
+                        {
+                            Console.WriteLine($"{cPropExist.Name} isn't type Int");
+                        }
                     }
                     else
                     {
@@ -217,10 +217,9 @@ namespace ReflectionTest
             var eType = _e.GetType();
             var aType = _a.GetType();
 
-            //copy from a to E
             foreach (var eProp in eType.GetProperties())
             {
-                var aPropExist = aType.GetProperty(aType.Name + eProp.Name.Substring(1));
+                var aPropExist = aType.GetProperty(aType.Name + eProp.Name[1..]);
 
                 if (aPropExist != null)
                 {
@@ -252,6 +251,6 @@ namespace ReflectionTest
         {
             return arr.Cast<T>().ToArray();
         }
-    }
 
+    }
 }

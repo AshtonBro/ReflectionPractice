@@ -31,21 +31,22 @@ namespace ReflectionTest
             //Copy all values from f to g. Some properties are skipped, put there values in array properties.
 
             ReflectionPresenter.GetValues(a);
-            // Task #1
+            //Task #1
 
             ReflectionPresenter.CopyDivideValues(a, b);
-            // Task #2
+            //Task #2
 
             ReflectionPresenter.CopyValuesWithAttrFilter(a, b, c);
-            // Task #3
+            //Task #3
 
             ReflectionPresenter.CopyValues(c, d);
-            // Task #4
+            //Task #4
 
             ReflectionPresenter.CopyValuesArrayProp(c, e);
-            // Task #5
-
             //ReflectionPresenter.CopyValuesArrayPropSecond(e, c);
+            //Task #5
+
+
         }
     }
 }
