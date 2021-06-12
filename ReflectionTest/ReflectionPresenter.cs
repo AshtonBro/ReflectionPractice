@@ -251,6 +251,5 @@ namespace ReflectionTest
         {
             return arr.Cast<T>().ToArray();
         }
-
     }
 }
