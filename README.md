@@ -1,5 +1,5 @@
 # Reflection <img src="https://img.shields.io/badge/System.Type -dark green"> <img src="https://img.shields.io/badge/System.Reflection -green">
-### The classes in the System.Reflection namespace, together with System.Type, enable you to obtain information about loaded assemblies and the types defined within them, such as classes, interfaces, and value types (that is, structures and enumerations). You can also use reflection to create type instances at run time, and to invoke and access them.
+### The classes in the System.Reflection namespace, together with System.Type enables you to obtain information about loaded assemblies and the types defined within them, such as classes, interfaces, and value types (structures and enumerations). You can also use reflection to create type instances at run time and invoke and access them.
 
 ### These tasks will help you understand reflection and apply the knowledge to your projects:
 :one: *Print all values from a.* <br>
